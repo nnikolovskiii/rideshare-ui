@@ -34,6 +34,7 @@ export const login = async (
 ): Promise<LoginResponse> => {
     try {
         const response = await api.post<LoginResponse>('/auth/login', {email, password});
+        // Cookies are handled automatically by interceptor
         return response.data;
     } catch (error) {
         const err = error as ApiError;
@@ -44,6 +45,7 @@ export const login = async (
 export const logout = async (): Promise<void> => {
     try {
         await api.post('/auth/logout');
+        // Clear cookies on logout
         await AsyncStorage.removeItem('cookies');
     } catch (error) {
         const err = error as ApiError;

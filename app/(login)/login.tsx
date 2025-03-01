@@ -1,36 +1,33 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { register } from "@/services/userService";
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
+import React, {useState} from 'react';
+import {StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Platform} from 'react-native';
+import {ThemedView} from '@/components/ThemedView';
+import {ThemedText} from '@/components/ThemedText';
+import {login} from "@/services/userService";
+import {LinearGradient} from 'expo-linear-gradient';
+import {Ionicons} from '@expo/vector-icons';
 import {useRouter} from "expo-router";
 
-export default function RegisterScreen() {
+export default function LoginScreen() {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [fullName, setFullName] = useState('');
     const [error, setError] = useState('');
 
-    const handleRegister = async () => {
+    const handleLogin = async () => {
         setError('');
         try {
-            if (!email || !password || !fullName) {
-                throw new Error('All fields are required');
+            if (!email || !password) {
+                throw new Error('Email and password are required');
             }
 
-            await register(email, password, fullName);
-            console.log('Registration successful');
-            // Clear form after successful registration
+            await login(email, password);
+            console.log('Login successful');
             setEmail('');
             setPassword('');
-            setFullName('');
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
-                console.error('Registration error:', error.message);
+                console.error('Login error:', error.message);
             }
         }
     };
@@ -41,24 +38,12 @@ export default function RegisterScreen() {
             style={styles.container}
         >
             <ThemedView style={styles.innerContainer}>
-                <ThemedText type="title" style={styles.title}>Create Account</ThemedText>
+                <ThemedText type="title" style={styles.title}>Welcome Back</ThemedText>
 
                 <View style={styles.formContainer}>
-                    {/* Full Name Input */}
-                    <View style={styles.inputContainer}>
-                        <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Full Name"
-                            placeholderTextColor="#666"
-                            value={fullName}
-                            onChangeText={setFullName}
-                        />
-                    </View>
-
                     {/* Email Input */}
                     <View style={styles.inputContainer}>
-                        <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
+                        <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon}/>
                         <TextInput
                             style={styles.input}
                             placeholder="Email"
@@ -72,7 +57,7 @@ export default function RegisterScreen() {
 
                     {/* Password Input */}
                     <View style={styles.inputContainer}>
-                        <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
+                        <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon}/>
                         <TextInput
                             style={styles.input}
                             placeholder="Password"
@@ -83,40 +68,40 @@ export default function RegisterScreen() {
                         />
                     </View>
 
-                    {error && (
+                    {error ? (
                         <View style={styles.errorContainer}>
                             <ThemedText style={styles.errorText}>{error}</ThemedText>
                         </View>
-                    )}
+                    ) : null}
 
                     <Pressable
-                        style={({ pressed }) => [
+                        style={({pressed}) => [
                             styles.button,
                             pressed && styles.buttonPressed
                         ]}
-                        onPress={handleRegister}
+                        onPress={handleLogin}
                     >
                         <LinearGradient
                             colors={['#667eea', '#764ba2']}
                             style={styles.gradient}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
+                            start={{x: 0, y: 0}}
+                            end={{x: 1, y: 0}}
                         >
-                            <ThemedText style={styles.buttonText}>Register Now</ThemedText>
+                            <ThemedText style={styles.buttonText}>Sign In</ThemedText>
                         </LinearGradient>
                     </Pressable>
                 </View>
 
                 <View style={styles.loginContainer}>
-                    <ThemedText>Already have an account? </ThemedText>
-                    <Pressable onPress={() => router.push("/login")}>
-                        <ThemedText style={styles.loginLink}>Sign In</ThemedText>
+                    <ThemedText>Don't have an account? </ThemedText>
+                    <Pressable onPress={() => router.push("/register")}>
+                        <ThemedText style={styles.loginLink}>Sign Up</ThemedText>
                     </Pressable>
                 </View>
 
                 <ThemedView style={styles.terms}>
                     <ThemedText style={styles.termsText}>
-                        By registering, you agree to our{' '}
+                        By logging in, you agree to our{' '}
                         <ThemedText style={styles.termsLink}>Terms of Service</ThemedText> and{' '}
                         <ThemedText style={styles.termsLink}>Privacy Policy</ThemedText>
                     </ThemedText>
@@ -125,7 +110,7 @@ export default function RegisterScreen() {
         </KeyboardAvoidingView>
     );
 }
-
+// Reuse the same styles as RegisterScreen
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -154,7 +139,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 15,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.1,
         shadowRadius: 6,
         elevation: 3,
@@ -173,7 +158,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         marginTop: 10,
         shadowColor: '#764ba2',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 5,

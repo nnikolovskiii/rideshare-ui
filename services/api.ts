@@ -1,4 +1,3 @@
-// api.ts
 import axios, {
     AxiosRequestConfig,
     AxiosResponse,
@@ -15,27 +14,41 @@ export interface ApiError {
 
 const api = axios.create({
     baseURL: 'http://localhost:5000',
+    withCredentials: true,  // This enables cookie handling
 });
 
-// Updated request interceptor with proper typing
-api.interceptors.request.use(
-    async (config: InternalAxiosRequestConfig) => {
-        const cookies = await AsyncStorage.getItem('cookies');
-        if (cookies) {
-            config.headers = config.headers || {};
-            config.headers.Cookie = cookies;
-        }
-        return config;
-    },
-    (error: AxiosError) => Promise.reject(error)
-);
-
-// Updated response interceptor
+// Modified response interceptor to correctly parse cookies
 api.interceptors.response.use(
     (response: AxiosResponse) => {
         const cookies = response.headers['set-cookie'];
         if (cookies) {
-            AsyncStorage.setItem('cookies', cookies[0]);
+            // Parse cookies to extract name=value pairs only
+            const parsedCookies = cookies.map(cookie => {
+                const [nameValue] = cookie.split(';');
+                return nameValue;
+            });
+            // Store the parsed cookies
+            AsyncStorage.setItem('cookies', parsedCookies.join('; '));
+        }
+        return response;
+    },
+    (error: AxiosError) => {
+        const apiError: ApiError = {
+            message: error.message,
+            status: error.response?.status,
+            data: error.response?.data,
+        };
+        return Promise.reject(apiError);
+    }
+);
+
+// Modified response interceptor
+api.interceptors.response.use(
+    (response: AxiosResponse) => {
+        const cookies = response.headers['set-cookie'];
+        if (cookies) {
+            // Store the latest cookies
+            AsyncStorage.setItem('cookies', cookies.join(';'));
         }
         return response;
     },
