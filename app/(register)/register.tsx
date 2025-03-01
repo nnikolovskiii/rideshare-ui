@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Pressable, TextInput } from 'react-native';
+import { StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import {register} from "@/services/userService";
+import { register } from "@/services/userService";
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RegisterScreen() {
     const [email, setEmail] = useState('');
@@ -32,100 +34,196 @@ export default function RegisterScreen() {
     };
 
     return (
-        <ThemedView style={styles.container}>
-            <ThemedText type="title">Create Account</ThemedText>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+        >
+            <ThemedView style={styles.innerContainer}>
+                <ThemedText type="title" style={styles.title}>Create Account</ThemedText>
 
-            <View style={styles.formContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Full Name"
-                    value={fullName}
-                    onChangeText={setFullName}
-                    placeholderTextColor="#666"
-                />
+                <View style={styles.formContainer}>
+                    {/* Full Name Input */}
+                    <View style={styles.inputContainer}>
+                        <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Full Name"
+                            placeholderTextColor="#666"
+                            value={fullName}
+                            onChangeText={setFullName}
+                        />
+                    </View>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    placeholderTextColor="#666"
-                />
+                    {/* Email Input */}
+                    <View style={styles.inputContainer}>
+                        <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            placeholderTextColor="#666"
+                            value={email}
+                            onChangeText={setEmail}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                        />
+                    </View>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    placeholderTextColor="#666"
-                />
+                    {/* Password Input */}
+                    <View style={styles.inputContainer}>
+                        <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Password"
+                            placeholderTextColor="#666"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
+                    </View>
 
-                {error ? (
-                    <ThemedText style={styles.errorText}>{error}</ThemedText>
-                ) : null}
+                    {error && (
+                        <View style={styles.errorContainer}>
+                            <ThemedText style={styles.errorText}>{error}</ThemedText>
+                        </View>
+                    )}
 
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.button,
-                        { opacity: pressed ? 0.8 : 1 }
-                    ]}
-                    onPress={handleRegister}
-                >
-                    <ThemedText style={styles.buttonText}>Register</ThemedText>
-                </Pressable>
-            </View>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.button,
+                            pressed && styles.buttonPressed
+                        ]}
+                        onPress={handleRegister}
+                    >
+                        <LinearGradient
+                            colors={['#667eea', '#764ba2']}
+                            style={styles.gradient}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                        >
+                            <ThemedText style={styles.buttonText}>Register Now</ThemedText>
+                        </LinearGradient>
+                    </Pressable>
+                </View>
 
-            <ThemedView style={styles.terms}>
-                <ThemedText>
-                    By registering, you agree to our{' '}
-                    <ThemedText type="defaultSemiBold">Terms of Service</ThemedText>
-                </ThemedText>
+                <View style={styles.loginContainer}>
+                    <ThemedText>Already have an account? </ThemedText>
+                    <Pressable>
+                        <ThemedText style={styles.loginLink}>Sign In</ThemedText>
+                    </Pressable>
+                </View>
+
+                <ThemedView style={styles.terms}>
+                    <ThemedText style={styles.termsText}>
+                        By registering, you agree to our{' '}
+                        <ThemedText style={styles.termsLink}>Terms of Service</ThemedText> and{' '}
+                        <ThemedText style={styles.termsLink}>Privacy Policy</ThemedText>
+                    </ThemedText>
+                </ThemedView>
             </ThemedView>
-        </ThemedView>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        backgroundColor: '#f8f9fa',
+    },
+    innerContainer: {
+        flex: 1,
+        paddingHorizontal: 30,
+        paddingVertical: 50,
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 32,
+        marginBottom: 40,
+        textAlign: 'center',
+        color: '#2d3748',
     },
     formContainer: {
-        marginTop: 24,
-        gap: 16,
+        marginBottom: 20,
+        gap: 20,
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 12,
+        paddingHorizontal: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 3,
+    },
+    inputIcon: {
+        marginRight: 10,
     },
     input: {
-        height: 50,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        paddingHorizontal: 16,
+        flex: 1,
+        height: 56,
         fontSize: 16,
-        backgroundColor: 'white',
+        color: '#2d3748',
     },
     button: {
-        backgroundColor: '#007AFF',
-        borderRadius: 8,
-        paddingVertical: 14,
+        borderRadius: 12,
+        overflow: 'hidden',
+        marginTop: 10,
+        shadowColor: '#764ba2',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    gradient: {
+        paddingVertical: 16,
         alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonPressed: {
+        opacity: 0.9,
     },
     buttonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: '600',
+        letterSpacing: 0.5,
     },
-    errorText: {
-        color: 'red',
-        marginTop: 8,
-        textAlign: 'center',
-    },
-    terms: {
-        marginTop: 24,
+    errorContainer: {
+        backgroundColor: '#fee2e2',
         padding: 12,
         borderRadius: 8,
-        backgroundColor: '#f0f0f0',
+        marginTop: 10,
+    },
+    errorText: {
+        color: '#dc2626',
+        textAlign: 'center',
+        fontSize: 14,
+    },
+    loginContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginVertical: 20,
+    },
+    loginLink: {
+        color: '#667eea',
+        fontWeight: '600',
+    },
+    terms: {
+        marginTop: 30,
+        padding: 15,
+        borderRadius: 12,
+        backgroundColor: '#e9ecef',
+    },
+    termsText: {
+        textAlign: 'center',
+        fontSize: 12,
+        lineHeight: 18,
+        color: '#4a5568',
+    },
+    termsLink: {
+        color: '#667eea',
+        fontWeight: '600',
     },
 });
