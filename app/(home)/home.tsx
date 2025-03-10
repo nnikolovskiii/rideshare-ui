@@ -65,6 +65,9 @@ export default function ProfileScreen() {
 
                         <ThemedText style={styles.label}>Full Name:</ThemedText>
                         <ThemedText style={styles.name}>{user.full_name}</ThemedText>
+
+                        <ThemedText style={styles.label}>Role:</ThemedText>
+                        <ThemedText style={styles.email}>{user.role}</ThemedText>
                     </ThemedView>
 
                     <Pressable

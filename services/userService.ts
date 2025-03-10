@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export interface User {
     email: string;
     full_name: string;
+    role: string | null
 }
 
 export interface LoginResponse {
@@ -57,6 +58,19 @@ export const getCurrentUser = async (): Promise<User> => {
     try {
         const response = await api.get<User>('/auth/get_current_user');
         return response.data;
+    } catch (error) {
+        const err = error as ApiError;
+        throw new Error(err.data?.detail || err.message);
+    }
+};
+
+export const setUserRole = async (role: string): Promise<string> => {
+    try {
+        const response = await api.post<{ message: string }>(
+            '/auth/set_role',
+            {role}
+        );
+        return response.data.message;
     } catch (error) {
         const err = error as ApiError;
         throw new Error(err.data?.detail || err.message);
